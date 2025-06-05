@@ -20,7 +20,8 @@ class Object(Node):
 
     def visit(self, visitor: 'Visitor', context: 'Context') -> 'Object':
 
-        if visit := getattr(visitor, 'visit_object', None):
-            return visit(self, context)
+        try:
+            return visitor.visit_object(self, context)
 
-        return super().visit(visitor, context)
+        except AttributeError:
+            return super().visit(self, context)

@@ -1,99 +1,105 @@
 # -------------------------------------------------------------------------------------------------
-# ----------------- Taxonomy :: Taxonomic Class-to-Keyword Helpers and Constants ------------------
+# --------------- Taxonomy :: Taxonomic Node Classification and Reference Utilities ---------------
 # -------------------------------------------------------------------------------------------------
 from typing import TYPE_CHECKING
 from typing import Callable
-from typing import Iterable
-from typing import Type
+from typing import Literal
 from typing import overload
 
 if TYPE_CHECKING:
     from Ontology.Abstract.Node import Node
 
-import collections
+from collections import defaultdict
 
 
 # -------------------------------------------------------------------------------------------------
-# ------------------------------------------- Constants -------------------------------------------
+# --------------------------------- Taxonomic Container Cnnstants ---------------------------------
 # -------------------------------------------------------------------------------------------------
+SINGULAR_TO_PLURAL  = {}
+PLURAL_TO_SINGULAR  = {}
 SINGULAR_TO_SPECIES = {}
-SPECIES_TO_SINGULAR = {}
 PLURAL_TO_SPECIES   = {}
+SPECIES_TO_SINGULAR = {}
 SPECIES_TO_PLURAL   = {}
 SINGULAR_TO_ATOM    = {}
 PLURAL_TO_ATOM      = {}
 
 
 # -------------------------------------------------------------------------------------------------
-# ---------------------------------------- Register a Node ----------------------------------------
+# ------------------------------- UTILITY :: Register a Node Class --------------------------------
 # -------------------------------------------------------------------------------------------------
-def register(singular: str = '', plural: str = '', atom: Type = None) -> Callable[[Type], Type]:
+def register(singular: str = '', plural: str = '', atom: type = None) -> Callable[[type], type]:
 
-    def decorator(species: Type) -> Type:
+    def register(species: type) -> type:
+
+        if singular and plural:
+            SINGULAR_TO_PLURAL[singular] = plural
+            PLURAL_TO_SINGULAR[plural] = singular
+
+        if singular and atom:
+            SINGULAR_TO_ATOM[singular] = atom
+
+        if plural and atom:
+            PLURAL_TO_ATOM[singular] = atom
 
         if singular:
-            SINGULAR_TO_SPECIES[singular] = species
             SPECIES_TO_SINGULAR[species] = singular
+            SINGULAR_TO_SPECIES[singular] = species
 
         if plural:
-            PLURAL_TO_SPECIES[plural] = species
-            SPECIES_TO_PLURAL[species] = plural
-
-        if atom:
-            SINGULAR_TO_ATOM[singular] = atom
-            PLURAL_TO_ATOM[plural] = atom
+            SPECIES_TO_PLURAL[species] = singular
+            PLURAL_TO_SPECIES[singular] = species
 
         return species
 
-    return decorator
+    return register
 
 
 # -------------------------------------------------------------------------------------------------
-# --------------------- HELPER :: Partition Kwargs by Atom (Singular Keyword) ---------------------
+# ---------------------------- UTILITY :: Partition Attributes by Atom ----------------------------
 # -------------------------------------------------------------------------------------------------
-def partition_single(attributes: dict[str, int]) -> dict[type, dict[str, int]]:
+def partition(attributes: dict[str, int]) -> dict[type, dict[str, int]]:
 
-    grouped = collections.defaultdict(dict)
+    output = defaultdict(dict)
 
     for attribute, value in attributes.items():
-        grouped[SINGULAR_TO_ATOM[attribute]][attribute] = value
+        output[SINGULAR_TO_ATOM][attribute] = value
 
-    return grouped
-
-
-# -------------------------------------------------------------------------------------------------
-# ---------------------- HELPER :: Partition Kwargs by Atom (Plural Keyword) ----------------------
-# -------------------------------------------------------------------------------------------------
-def partition_plural(attributes: dict[str, int]) -> dict[type, dict[str, int]]:
-    grouped = collections.defaultdict(dict)
-
-    for attribute, value in attributes.items():
-        grouped[SINGULAR_TO_ATOM[attribute]][attribute] = value
-
-    return grouped
+    return output
 
 
 # -------------------------------------------------------------------------------------------------
-# --------------------- HELPER :: Partition Components by Type (into Groups) ----------------------
+# ---------------------- UTILITY :: Partition Components by Type into Groups ----------------------
 # -------------------------------------------------------------------------------------------------
-def sort_plural(components: Iterable['Node']) -> dict[type, list['Node']]:
+def sort_multiple(components: list['Node']) -> dict[type, list['Node']]:
 
-    grouped = collections.defaultdict(list)
+    output = defaultdict(list)
 
     for component in components:
-        grouped[type(component)].append(component)
+        output[type(component)].append(component)
 
-    return grouped
+    return output
 
 
 # -------------------------------------------------------------------------------------------------
-# -------------------- HELPER :: Partition Components by Type (One Entry Per) ---------------------
+# ----------------- UTILITY :: Partition Components by Type into Singluar Objects -----------------
 # -------------------------------------------------------------------------------------------------
-def sort_single(components: Iterable['Node']):
+def sort_singular(components: list['Node']) -> dict[type, 'Node']:
 
-    grouped = dict()
+    output = dict()
 
     for component in components:
-        grouped[type(component)] = component
+        output[type(component)] = component
 
-    return grouped
+    return output
+
+
+# -------------------------------------------------------------------------------------------------
+# ---------------------------- Import and Register Every Node Subclass ----------------------------
+# -------------------------------------------------------------------------------------------------
+from Ontology.Abstract.Node  import Node
+from Ontology.Objects.Object import Object
+from Ontology.Objects.Player import Player
+from Ontology.Objects.Card   import Card
+from Ontology.Objects.Zone   import Zone
+from Ontology.Zones.World    import World

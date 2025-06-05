@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------
-# -------------------------------- Ontology :: Objects :: Zone ABC --------------------------------
+# ---------------------------- Ontology :: Objects :: Zone Object ABC -----------------------------
 # -------------------------------------------------------------------------------------------------
 from Ontology.Objects.Object import Object
 from Ontology.Abstract.Node  import Node
@@ -21,7 +21,8 @@ class Zone(Object):
 
     def visit(self, visitor: 'Visitor', context: 'Context') -> 'Zone':
 
-        if visit := getattr(visitor, 'visit_zone', None):
-            return visit(self, context)
+        try:
+            return visitor.visit_zone(self, context)
 
-        return super().visit(visitor, context)
+        except AttributeError:
+            return super().visit(self, context)

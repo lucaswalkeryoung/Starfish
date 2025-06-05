@@ -3,9 +3,18 @@
 # -------------------------------------------------------------------------------------------------
 from Visitors.Context import Context
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Taxonomy.Taxonomy import *
+
 
 # -------------------------------------------------------------------------------------------------
 # ---------------------------------------- ABC :: Visitor -----------------------------------------
 # -------------------------------------------------------------------------------------------------
 class Visitor(object):
-    ...
+
+    def visit_node(self, node: 'Node', context: 'Context') -> object:
+
+        for component in node.components:
+            component.visit(self, context.descend())
