@@ -24,4 +24,4 @@ class Object(Node):
             return visitor.visit_object(self, context)
 
         except AttributeError:
-            return super().visit(self, context)
+            return super().visit(visitor, context)

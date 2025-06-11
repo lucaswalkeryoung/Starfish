@@ -2,6 +2,7 @@
 # ------------------------------- Ontology :: Abstract :: Node ABC --------------------------------
 # -------------------------------------------------------------------------------------------------
 from typing import TYPE_CHECKING
+from typing import Optional
 
 if TYPE_CHECKING:
     from Visitors.Context import Context
@@ -24,3 +25,7 @@ class Node(object):
 
     def visit(self, visitor: 'Visitor', context: 'Context') -> 'Node':
         return visitor.visit_node(self, context)
+
+    @property
+    def parent(self) -> 'None | Node':
+        return self.edges['parent'][0]

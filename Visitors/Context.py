@@ -44,7 +44,7 @@ class Context(Mapping[str, object]):
         ancestor = self
         ancestry = []
 
-        while ancestor:
+        while ancestor is not None:
             ancestry.append(ancestor.context)
             ancestor = ancestor.parent
 
@@ -76,7 +76,7 @@ class Context(Mapping[str, object]):
     # --------------------------- OPERATOR :: Iterate through Keys ----------------------------
     # -----------------------------------------------------------------------------------------
     def __bool__(self) -> bool:
-        return bool(self.self.ascend())
+        return bool(self.ascend())
 
 
     # -----------------------------------------------------------------------------------------

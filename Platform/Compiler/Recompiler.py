@@ -24,5 +24,5 @@ class Recompiler(Visitor):
     # ------------------------------ ENTRY :: Linker Entry Point ------------------------------
     # -----------------------------------------------------------------------------------------
     @staticmethod
-    def compile(node: World) -> World:
+    def recompile(node: World) -> None:
         return node.visit(Recompiler(), Context())

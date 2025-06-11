@@ -25,4 +25,4 @@ class Card(Object):
             return visitor.visit_card(self, context)
 
         except AttributeError:
-            return super().visit(self, context)
+            return super().visit(visitor, context)

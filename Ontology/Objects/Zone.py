@@ -25,4 +25,4 @@ class Zone(Object):
             return visitor.visit_zone(self, context)
 
         except AttributeError:
-            return super().visit(self, context)
+            return super().visit(visitor, context)
